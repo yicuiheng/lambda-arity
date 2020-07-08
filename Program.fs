@@ -7,13 +7,31 @@ type GameOver =
 
 type Effect<'S> = {
     PreCondition: 'S -> bool;
-    action: 'S -> Result<'S, GameOver>;
+    Action: 'S -> Result<'S, GameOver>;
 }
 
 type Card<'S> = {
     Name: String;
     Effects: Effect<'S> list;
 }
+
+
+type ManaPool = {
+        White: int
+        Red: int
+        Green: int
+        Blue: int
+        Black: int
+};
+
+let emptyManaPool = {
+    White = 0
+    Red = 0
+    Green = 0
+    Blue = 0
+    Black = 0
+}
+
 
 [<Literal>]
 let InitialHandsNumber = 5;
@@ -24,6 +42,7 @@ type Player<'S> = {
     Hands: Card<'S> list;
     BattleField: Card<'S> list;
     Graveyard: Card<'S> list;
+    ManaPool: ManaPool;
 } with
     member this.Draw n =
         match (n, this.Deck) with
@@ -34,11 +53,12 @@ type Player<'S> = {
 
     static member Init name deck =
         let player = {
-            Name = name;
-            Deck = deck;
-            Hands = [];
-            BattleField = [];
-            Graveyard = [];
+            Name = name
+            Deck = deck
+            Hands = []
+            BattleField = []
+            Graveyard = []
+            ManaPool = emptyManaPool
         }
         let (Ok player) = player.Draw(InitialHandsNumber)
         player
@@ -129,8 +149,8 @@ let main argv =
         Player2 = Player.Init "Player2" player2Deck;
     }
     match mainLoop state with
-    | Victory name -> printfn "Victory : %s" name
-    | Defeat name -> printfn "Defeat: %s" name
-    | Draw -> printfn "Draw!"
+    | Victory name -> printfn "\x1b[31mVictory : %s\x1b[0m" name
+    | Defeat name -> printfn "\x1b[34mDefeat : %s\x1b[0m" name
+    | Draw -> printfn "\x1b[42mDraw\x1b[0m"
     0
 
